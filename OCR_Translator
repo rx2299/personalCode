@@ -1,3 +1,9 @@
+'''
+Use API engine to perform OCR and translate into other languages 
+'''
+
+
+
 import numpy as np
 import cv2
 import requests
