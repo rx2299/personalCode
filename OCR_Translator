@@ -1,0 +1,42 @@
+import numpy as np
+import cv2
+import requests
+import io
+import json
+from googletrans import Translator
+
+# display image
+img = cv2.imread('test.jpg')
+
+# compress image and convert it to bytes
+_, compressedimage = cv2.imencode(".jpg",img,[1,90])
+file_bytes = io.BytesIO(compressedimage)
+
+# send img to orc and get it back to result
+url_api = "https://api.ocr.space/parse/image"
+result = requests.post(url_api,
+              files = {"test.png": file_bytes},
+              data = {"apikey": "0aaa7f408d88957"})
+
+
+# convert result from string into dictionary
+result = result.content.decode()
+result = json.loads(result)
+
+# read the first and only value of the dictionary which is the parsed text and display
+text_detected = result.get("ParsedResults")[0].get("ParsedText")
+print(text_detected)
+
+# show the image, and wait for close it to close the program
+cv2.imshow("img",img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# translate into Chinese and French
+trans = Translator()
+trans1 = Translator()
+t = trans.translate(text_detected, dest='zh-cn', src='en')
+t1 = trans1.translate(text_detected, dest='fr', src='en')
+print(t.text)
+print('')
+print(t1.text)
